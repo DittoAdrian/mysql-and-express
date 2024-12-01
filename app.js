@@ -32,6 +32,13 @@ app.patch('/users/:id', async (req, res)=>{
     res.status(200).send(note);
 })
 
+// route delete user
+app.delete('/users/:id',async (req, res)=>{
+    const id = req.params.id
+    const user = await deleteUser(id)
+    res.send(user)
+})
+
 
 // erorr handler
 app.use((err, req, res, next) => {

@@ -15,7 +15,6 @@ export async function getUsers() {
     const [rows] = await pool.query("SELECT * FROM users")
     return rows
 }
-
 // get user by id
 export async function getUser(id) {
     const [rows] = await pool.query(`
@@ -26,12 +25,24 @@ export async function getUser(id) {
     return rows[0]
 }
 
+export async function getUserByUsername(username){
+    const [rows] = await pool.query(`
+        SELECT *
+        FROM users
+        WHERE username = ? 
+        `, [username])
+    return rows[0]
+}
+
 // insert user
-export async function createUser(username, password, email) {
+export async function createUser(name, username, password, email) {
+    const premium = 0;
+    const verification = 1;
+    const token = '';
     const [result] = await pool.query(`
-        INSERT INTO users (username, password, email)
-        VALUES (?, ?, ?)
-        `, [username, password, email])
+        INSERT INTO users (name, username, password, email, premium, verification, token)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+        `, [name, username, password, email, premium, verification, token])
         const id = result.insertId
         return getUser(id)
 }
@@ -44,14 +55,12 @@ export async function updateUser(id, username, password, email){
          WHERE id = ?`,
         [username, password, email, id]
     );
-
     if (result.affectedRows > 0) {
         return getUser(id);
     } else {
         throw new Error(`User dengan ID ${id} tidak ditemukan.`);
     }
 }
-
 //  delete user
 export async function deleteUser(id){
     const [result] = await pool.query(`
